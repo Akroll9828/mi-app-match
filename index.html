@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Match</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f5f7fa; color: #333; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block; margin-top: 50px; width: 300px; }
+        .btn { border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 16px; margin: 10px; }
+        .btn-like { background-color: #2ecc71; color: white; }
+        .btn-skip { background-color: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1 id="welcome-text">Buscando personas cerca de ti...</h1>
+    
+    <div id="filter-box">
+        <label id="distance-label">Distancia máxima (km):</label>
+        <input type="number" id="distance-input" value="50">
+    </div>
+
+    <div class="card" id="profile-card">
+        <h2 id="profile-name">Cargando perfil...</h2>
+        <p id="profile-bio"></p>
+        <p><strong><span id="profile-country"></span></strong></p>
+        <button class="btn btn-skip" onclick="nextProfile()">Skip</button>
+        <button class="btn btn-like" onclick="likeProfile()">Like</button>
+    </div>
+
+    <script>
+        // Diccionario de Idiomas
+        const translations = {
+            es: { welcome: "Conoce personas en todo el mundo", distance: "Distancia máxima (km):", match: "¡Felicidades! ¡Tienes un Match!" },
+            en: { welcome: "Meet people all over the world", distance: "Maximum distance (km):", match: "Congratulations! It's a Match!" },
+            fr: { welcome: "Rencontrez des gens partout dans le monde", distance: "Distance maximale (km):", match: "Félicitations! C'est un Match!" }
+        };
+
+        // Detectar el idioma del navegador del usuario de forma automática
+        const userLang = navigator.language || navigator.userLanguage;
+        const langCode = userLang.startsWith('es') ? 'es' : userLang.startsWith('fr') ? 'fr' : 'en';
+
+        // Aplicar la traducción instantánea
+        document.getElementById('welcome-text').innerText = translations[langCode].welcome;
+        document.getElementById('distance-label').innerText = translations[langCode].distance;
+
+        let currentUserId = "65fc1234567890abcdef1234"; 
+        let activeProfileId = null;
+
+        async function loadDiscover() {
+            const maxDistance = document.getElementById('distance-input').value;
+            
+            // Simulación de perfiles adaptados
+            const mockProfiles = [
+                { _id: "9999", name: "Sarah", country: "USA", bio: "Hi! I love traveling and photography." },
+                { _id: "8888", name: "Mateo", country: "España", bio: "Hola, me gusta el fútbol y la cocina." }
+            ];
+
+            const profile = mockProfiles[Math.floor(Math.random() * mockProfiles.length)];
+            activeProfileId = profile._id;
+            document.getElementById('profile-name').innerText = profile.name;
+            document.getElementById('profile-bio').innerText = profile.bio;
+            document.getElementById('profile-country').innerText = profile.country;
+        }
+
+        async function likeProfile() {
+            alert(translations[langCode].match + " (Ilimitado y Gratis)");
+            loadDiscover();
+        }
+
+        function nextProfile() {
+            loadDiscover();
+        }
+
+        loadDiscover();
+    </script>
+</body>
+</html>
