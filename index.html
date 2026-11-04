@@ -3,31 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Match Evolution</title>
+    <title>Global Match Perfecto</title>
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #fd297b, #ff5864, #ff655b); margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; color: #fff; }
         .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); color: #333; width: 360px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
-        h2 { margin-top: 0; color: #ff5864; }
-        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        h2 { margin-top: 0; color: #ff5864; text-align: center; font-size: 26px; }
+        .field-group { text-align: left; margin-bottom: 12px; }
+        .field-group label { font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 4px; }
+        input, textarea, select { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fff; color: #333; }
         .row { display: flex; gap: 10px; }
-        .upload-section { background: #f8f9fa; padding: 12px; border-radius: 10px; margin: 10px 0; text-align: left; }
-        .upload-section label { font-size: 13px; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
-        .interest-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 10px 0; }
-        .chip { padding: 6px 12px; background: #f1f2f6; border-radius: 15px; font-size: 12px; cursor: pointer; color: #555; }
-        .chip.selected { background: #ff5864; color: white; }
-        .btn-main { background: #ff5864; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        .row .field-group { flex: 1; }
+        .upload-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px dashed #bbb; margin: 15px 0; }
+        .interest-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+        .chip { padding: 8px 14px; background: #f1f2f6; border-radius: 20px; font-size: 13px; cursor: pointer; color: #444; transition: 0.1s; user-select: none; }
+        .chip.selected { background: #ff5864; color: white; font-weight: bold; }
+        .btn-main { background: #ff5864; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
         
-        /* Estilos del Feed Tipo Tinder */
+        /* Interfaz de Deslizamiento Tipo Tinder */
         .app-container { display: none; width: 360px; text-align: center; }
-        .group-tabs { display: flex; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 4px; margin-bottom: 15px; overflow-x: auto; gap: 5px; }
-        .tab { padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .group-tabs { display: flex; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 4px; margin-bottom: 15px; overflow-x: auto; gap: 4px; }
+        .tab { padding: 7px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; }
         .tab.active { background: white; color: #ff5864; font-weight: bold; }
         .card { position: relative; width: 360px; height: 520px; background: white; border-radius: 20px; overflow: hidden; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .profile-img { width: 100%; height: 65%; object-fit: cover; }
-        .img-counter { position: absolute; top: 10px; width: 100%; display: flex; justify-content: center; gap: 5px; }
-        .indicator { width: 30px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 2px; }
+        .profile-img { width: 100%; height: 65%; object-fit: cover; cursor: pointer; }
+        .img-counter { position: absolute; top: 12px; width: 100%; display: flex; justify-content: center; gap: 5px; }
+        .indicator { width: 35px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 2px; }
         .indicator.active { background: white; }
-        .verified-badge { background: #2ecc71; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: 5px; vertical-align: middle; }
+        .verified-badge { background: #2ecc71; color: white; font-size: 11px; padding: 2px 7px; border-radius: 10px; margin-left: 6px; display: inline-block; font-weight: bold; }
         .info-panel { padding: 15px; height: 35%; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; justify-content: space-between; }
         .actions { display: flex; justify-content: center; gap: 25px; margin-top: 20px; }
         .btn-action { width: 60px; height: 60px; border-radius: 50%; border: none; background: white; cursor: pointer; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
@@ -36,68 +38,112 @@
 </head>
 <body>
 
-    <!-- FORMULARIO DE REGISTRO AVANZADO -->
+    <!-- PANTALLA DE REGISTRO FORMAL Y DETALLADA -->
     <div class="box" id="reg-screen">
-        <h2>Crear Perfil Premium</h2>
-        <input type="text" id="reg-name" placeholder="Tu Nombre">
-        <input type="number" id="reg-age" placeholder="Tu Edad (Mínimo 18)">
+        <h2>Crear tu Perfil Real</h2>
+        
+        <div class="field-group">
+            <label>Tu Nombre Completo o Apodo:</label>
+            <input type="text" id="reg-name" placeholder="Ej: Alonso">
+        </div>
+
+        <div class="field-group">
+            <label>Tu Edad Actual Real:</label>
+            <input type="number" id="reg-age" placeholder="Mínimo 18 años">
+        </div>
         
         <div class="row">
-            <select id="reg-gender">
-                <option value="hombre">Soy Hombre</option>
-                <option value="mujer">Soy Mujer</option>
-            </select>
-            <select id="reg-interest">
-                <option value="mujer">Busco Mujeres</option>
-                <option value="hombre">Busco Hombres</option>
-                <option value="todos">Busco Ambos</option>
-            </select>
+            <div class="field-group">
+                <label>Tu Género:</label>
+                <select id="reg-gender">
+                    <option value="hombre">Soy Hombre</option>
+                    <option value="mujer">Soy Mujer</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>Quieres conocer:</label>
+                <select id="reg-interest">
+                    <option value="mujer">Chicas</option>
+                    <option value="hombre">Chicos</option>
+                    <option value="todos">A todos (Inclusivo)</option>
+                </select>
+            </div>
         </div>
 
         <div class="row">
-            <input type="number" id="reg-min-age" placeholder="Edad Mínima" value="18">
-            <input type="number" id="reg-max-age" placeholder="Edad Máxima" value="35">
-        </div>
-        <input type="number" id="reg-max-dist" placeholder="Distancia Máxima de búsqueda (km)" value="150">
-
-        <select id="reg-goal">
-            <option value="estable">Busco Relación Estable 💍</option>
-            <option value="casual">Busco Algo Casual 🔥</option>
-            <option value="pensando">Lo sigo pensando 🤔</option>
-            <option value="amigos">Solo amigos ☕</option>
-        </select>
-
-        <select id="reg-family">
-            <option value="no_hijos">No tengo hijos y no quiero</option>
-            <option value="tengo_hijos">Tengo hijos 👶</option>
-            <option value="quiero_hijos">No tengo pero sí quiero hijos</option>
-        </select>
-
-        <input type="text" id="reg-country" placeholder="Tu País / Ciudad">
-        <textarea id="reg-bio" placeholder="Escribe tu biografía detallada aquí..."></textarea>
-
-        <!-- SECCIÓN DE SUBIDA DE ARCHIVOS DIGITALES -->
-        <div class="upload-section">
-            <label>Subir tus 3 Fotos Obligatorias (Galería):</label>
-            <input type="file" id="file-photos" multiple accept="image/*">
-            <label style="margin-top:10px;">Selfie de Verificación Facial de Rostro:</label>
-            <input type="file" id="file-selfie" accept="image/*">
+            <div class="field-group">
+                <label>Edad Mínima que buscas:</label>
+                <input type="number" id="reg-min-age" value="18">
+            </div>
+            <div class="field-group">
+                <label>Edad Máxima que buscas:</label>
+                <input type="number" id="reg-max-age" value="35">
+            </div>
         </div>
 
-        <div class="interest-chips">
-            <div class="chip" onclick="toggleChip(this, '🎵 Música')">🎵 Música</div>
-            <div class="chip" onclick="toggleChip(this, '⚽ Deportes')">⚽ Deportes</div>
-            <div class="chip" onclick="toggleChip(this, '🎬 Cine')">🎬 Cine</div>
-            <div class="chip" onclick="toggleChip(this, '✈️ Viajar')">✈️ Viajar</div>
-            <div class="chip" onclick="toggleChip(this, '🎮 Juegos')">🎮 Juegos</div>
+        <div class="field-group">
+            <label>Distancia Máxima de Búsqueda (en Kilómetros a tu antojo):</label>
+            <input type="number" id="reg-max-dist" value="150" placeholder="Ej: 50, 500, 2000">
         </div>
 
-        <button class="btn-main" onclick="processRegistration()">Verificar e Ingresar</button>
+        <div class="field-group">
+            <label>¿Qué intenciones tienes? (Grupo de emparejamiento):</label>
+            <select id="reg-goal">
+                <option value="estable">Busco Relación Estable 💍</option>
+                <option value="casual">Busco Algo Casual 🔥</option>
+                <option value="pensando">Lo sigo pensando 🤔</option>
+                <option value="amigos">Solo amigos ☕</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label>Hijos:</label>
+            <select id="reg-family">
+                <option value="no_hijos">No tengo hijos y no quiero</option>
+                <option value="tengo_hijos">Tengo hijos 👶</option>
+                <option value="quiero_hijos">No tengo pero sí quiero tener</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label>Tu Ubicación Actual (País / Ciudad):</label>
+            <input type="text" id="reg-country" placeholder="Ej: Perú / Lima">
+        </div>
+
+        <div class="field-group">
+            <label>Biografía (Descríbete ante el mundo):</label>
+            <textarea id="reg-bio" placeholder="Escribe detalles sobre ti, qué te gusta hacer..."></textarea>
+        </div>
+
+        <!-- SUBIDA DESDE GALERÍA LOCAL -->
+        <div class="upload-box">
+            <div class="field-group">
+                <label>Selecciona tus 3 Fotos Obligatorias (Desde tu Galería):</label>
+                <input type="file" id="file-photos" multiple accept="image/*">
+            </div>
+            <div class="field-group" style="margin-top: 10px;">
+                <label>Foto Selfie de Rostro (Verificación de Identidad Gratis):</label>
+                <input type="file" id="file-selfie" accept="image/*">
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label style="text-align: center;">Selecciona tus Gustos Personales:</label>
+            <div class="interest-chips">
+                <div class="chip" onclick="toggleChip(this, '🎵 Música')">🎵 Música</div>
+                <div class="chip" onclick="toggleChip(this, '⚽ Deportes')">⚽ Deportes</div>
+                <div class="chip" onclick="toggleChip(this, '🎬 Cine')">🎬 Cine</div>
+                <div class="chip" onclick="toggleChip(this, '✈️ Viajar')">✈️ Viajar</div>
+                <div class="chip" onclick="toggleChip(this, '🎮 Juegos')">🎮 Juegos</div>
+                <div class="chip" onclick="toggleChip(this, '🍳 Cocinar')">🍳 Cocinar</div>
+            </div>
+        </div>
+
+        <button class="btn-main" onclick="processRegistration()">Registrar Perfil Completo</button>
     </div>
 
-    <!-- FEED PRINCIPAL TIPO TINDER EVOLUTION -->
+    <!-- PANTALLA PRINCIPAL DE INTERACCIÓN -->
     <div class="app-container" id="app-screen">
-        <!-- PESTAÑAS DE SEPARACIÓN DE GRUPOS -->
         <div class="group-tabs">
             <div class="tab active" onclick="changeGroup(this, 'todos')">🌐 Todos</div>
             <div class="tab" onclick="changeGroup(this, 'estable')">💍 Estables</div>
@@ -109,8 +155,8 @@
         <div class="card" id="main-card">
             <div class="match-screen" id="match-pop">
                 <h1 style="color:#2ecc71; font-size: 34px;">¡MATCH MUTUO! 😍</h1>
-                <p>Ambos se gustan y están en el mismo grupo</p>
-                <button onclick="closeMatch()" style="padding: 10px 20px; border-radius: 20px; border:none; background:#ff5864; color:white; font-weight:bold; cursor:pointer;">Seguir Deslizando</button>
+                <p>Se gustaron en el mismo grupo de interés</p>
+                <button onclick="closeMatch()" style="padding: 10px 20px; border-radius: 20px; border:none; background:#ff5864; color:white; font-weight:bold; cursor:pointer;">Continuar</button>
             </div>
 
             <div class="img-counter" id="img-indicators"></div>
@@ -119,52 +165,12 @@
             <div class="info-panel">
                 <div>
                     <span style="font-size:24px; font-weight:bold;" id="view-name"></span>
-                    <span class="verified-badge" id="view-verified">✓ Verificado Real</span>
-                    <p style="margin:2px 0; color:#555; font-size:14px;" id="view-geo"></p>
-                    <p style="margin:2px 0; font-size:12px; font-weight:bold; color:#ff5864;" id="view-meta"></p>
+                    <span class="verified-badge">✓ Perfil Verificado</span>
+                    <p style="margin:3px 0; color:#555; font-size:14px;" id="view-geo"></p>
+                    <p style="margin:3px 0; font-size:12px; font-weight:bold; color:#ff5864;" id="view-meta"></p>
                 </div>
                 <p class="profile-bio" id="view-bio"></p>
             </div>
         </div>
 
         <div class="actions">
-            <button class="btn-action" style="color: #e74c3c;" onclick="getProfiles()">❌</button>
-            <button class="btn-action" style="color: #2ecc71;" onclick="sendLike()">💚</button>
-        </div>
-    </div>
-
-    <script>
-        let myId = null;
-        let profileList = [];
-        let currentIndex = 0;
-        let currentPhotoIndex = 0;
-        let selectedInterests = [];
-        let currentGroup = 'todos';
-
-        // Convertir archivos de la galería local a texto Base64 interpretable por el servidor
-        const toBase64 = file => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-
-        function toggleChip(e, interest) {
-            e.classList.toggle('selected');
-            if(selectedInterests.includes(interest)) selectedInterests = selectedInterests.filter(i => i !== interest);
-            else selectedInterests.push(interest);
-        }
-
-        async function processRegistration() {
-            const name = document.getElementById('reg-name').value;
-            const age = document.getElementById('reg-age').value;
-            const photoFiles = document.getElementById('file-photos').files;
-            const selfieFile = document.getElementById('file-selfie').files[0];
-
-            if(!name || !age || photoFiles.length < 3 || !selfieFile) {
-                return alert("Faltan campos, recuerda subir tus 3 fotos de galería y tu selfie de rostro obligatoria.");
-            }
-
-            // Procesar las imágenes de la galería en paralelo
-            const base64Photos = [];
-            for(let i=0; i<photoFiles.length; i++) {
