@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Match Perfecto</title>
+    <title>Global Match Conectado</title>
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #fd297b, #ff5864, #ff655b); margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; color: #fff; }
         .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); color: #333; width: 360px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; }
-        h2 { margin-top: 0; color: #ff5864; text-align: center; font-size: 26px; }
+        h2 { margin-top: 0; color: #ff5864; text-align: center; }
         .field-group { text-align: left; margin-bottom: 12px; }
         .field-group label { font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 4px; }
         input, textarea, select { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; background: #fff; color: #333; }
@@ -15,11 +15,10 @@
         .row .field-group { flex: 1; }
         .upload-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px dashed #bbb; margin: 15px 0; }
         .interest-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
-        .chip { padding: 8px 14px; background: #f1f2f6; border-radius: 20px; font-size: 13px; cursor: pointer; color: #444; transition: 0.1s; user-select: none; }
+        .chip { padding: 8px 14px; background: #f1f2f6; border-radius: 20px; font-size: 13px; cursor: pointer; color: #444; transition: background 0.2s; user-select: none; }
         .chip.selected { background: #ff5864; color: white; font-weight: bold; }
         .btn-main { background: #ff5864; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
         
-        /* Interfaz de Deslizamiento Tipo Tinder */
         .app-container { display: none; width: 360px; text-align: center; }
         .group-tabs { display: flex; background: rgba(255,255,255,0.2); border-radius: 25px; padding: 4px; margin-bottom: 15px; overflow-x: auto; gap: 4px; }
         .tab { padding: 7px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; }
@@ -38,56 +37,26 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE REGISTRO FORMAL Y DETALLADA -->
     <div class="box" id="reg-screen">
         <h2>Crear tu Perfil Real</h2>
         
-        <div class="field-group">
-            <label>Tu Nombre Completo o Apodo:</label>
-            <input type="text" id="reg-name" placeholder="Ej: Alonso">
-        </div>
-
-        <div class="field-group">
-            <label>Tu Edad Actual Real:</label>
-            <input type="number" id="reg-age" placeholder="Mínimo 18 años">
-        </div>
+        <div class="field-group"><label>Tu Nombre:</label><input type="text" id="reg-name" placeholder="Ej: Alonso"></div>
+        <div class="field-group"><label>Tu Edad Real:</label><input type="number" id="reg-age" placeholder="Mínimo 18"></div>
         
         <div class="row">
-            <div class="field-group">
-                <label>Tu Género:</label>
-                <select id="reg-gender">
-                    <option value="hombre">Soy Hombre</option>
-                    <option value="mujer">Soy Mujer</option>
-                </select>
-            </div>
-            <div class="field-group">
-                <label>Quieres conocer:</label>
-                <select id="reg-interest">
-                    <option value="mujer">Chicas</option>
-                    <option value="hombre">Chicos</option>
-                    <option value="todos">A todos (Inclusivo)</option>
-                </select>
-            </div>
+            <div class="field-group"><label>Tu Género:</label><select id="reg-gender"><option value="hombre">Soy Hombre</option><option value="mujer">Soy Mujer</option></select></div>
+            <div class="field-group"><label>Buscas conocer:</label><select id="reg-interest"><option value="mujer">Chicas</option><option value="hombre">Chicos</option><option value="todos">A todos</option></select></div>
         </div>
 
         <div class="row">
-            <div class="field-group">
-                <label>Edad Mínima que buscas:</label>
-                <input type="number" id="reg-min-age" value="18">
-            </div>
-            <div class="field-group">
-                <label>Edad Máxima que buscas:</label>
-                <input type="number" id="reg-max-age" value="35">
-            </div>
+            <div class="field-group"><label>Edad Mínima:</label><input type="number" id="reg-min-age" value="18"></div>
+            <div class="field-group"><label>Edad Máxima:</label><input type="number" id="reg-max-age" value="35"></div>
         </div>
 
-        <div class="field-group">
-            <label>Distancia Máxima de Búsqueda (en Kilómetros a tu antojo):</label>
-            <input type="number" id="reg-max-dist" value="150" placeholder="Ej: 50, 500, 2000">
-        </div>
+        <div class="field-group"><label>Distancia Máxima de Búsqueda (km):</label><input type="number" id="reg-max-dist" value="150"></div>
 
         <div class="field-group">
-            <label>¿Qué intenciones tienes? (Grupo de emparejamiento):</label>
+            <label>¿Qué intenciones tienes? (Grupo):</label>
             <select id="reg-goal">
                 <option value="estable">Busco Relación Estable 💍</option>
                 <option value="casual">Busco Algo Casual 🔥</option>
@@ -101,48 +70,39 @@
             <select id="reg-family">
                 <option value="no_hijos">No tengo hijos y no quiero</option>
                 <option value="tengo_hijos">Tengo hijos 👶</option>
-                <option value="quiero_hijos">No tengo pero sí quiero tener</option>
+                <option value="quiero_hijos">No tengo pero sí quiero</option>
             </select>
         </div>
 
-        <div class="field-group">
-            <label>Tu Ubicación Actual (País / Ciudad):</label>
-            <input type="text" id="reg-country" placeholder="Ej: Perú / Lima">
-        </div>
+        <div class="field-group"><label>Tu Ubicación (País / Ciudad):</label><input type="text" id="reg-country" placeholder="Ej: Perú / Lima"></div>
+        <div class="field-group"><label>Biografía:</label><textarea id="reg-bio" placeholder="Descríbete ante el mundo..."></textarea></div>
 
-        <div class="field-group">
-            <label>Biografía (Descríbete ante el mundo):</label>
-            <textarea id="reg-bio" placeholder="Escribe detalles sobre ti, qué te gusta hacer..."></textarea>
-        </div>
-
-        <!-- SUBIDA DESDE GALERÍA LOCAL -->
         <div class="upload-box">
-            <div class="field-group">
-                <label>Selecciona tus 3 Fotos Obligatorias (Desde tu Galería):</label>
-                <input type="file" id="file-photos" multiple accept="image/*">
-            </div>
-            <div class="field-group" style="margin-top: 10px;">
-                <label>Foto Selfie de Rostro (Verificación de Identidad Gratis):</label>
-                <input type="file" id="file-selfie" accept="image/*">
-            </div>
+            <div class="field-group"><label>Selecciona tus 3 Fotos Obligatorias (Galería):</label><input type="file" id="file-photos" multiple accept="image/*"></div>
+            <div class="field-group" style="margin-top: 10px;"><label>Selfie de Rostro (Verificación Gratis):</label><input type="file" id="file-selfie" accept="image/*"></div>
         </div>
 
         <div class="field-group">
             <label style="text-align: center;">Selecciona tus Gustos Personales:</label>
             <div class="interest-chips">
-                <div class="chip" onclick="toggleChip(this, '🎵 Música')">🎵 Música</div>
-                <div class="chip" onclick="toggleChip(this, '⚽ Deportes')">⚽ Deportes</div>
-                <div class="chip" onclick="toggleChip(this, '🎬 Cine')">🎬 Cine</div>
-                <div class="chip" onclick="toggleChip(this, '✈️ Viajar')">✈️ Viajar</div>
-                <div class="chip" onclick="toggleChip(this, '🎮 Juegos')">🎮 Juegos</div>
-                <div class="chip" onclick="toggleChip(this, '🍳 Cocinar')">🍳 Cocinar</div>
+                <div class="chip" onclick="toggleChip(this)">🎵 Música</div>
+                <div class="chip" onclick="toggleChip(this)">⚽ Deportes</div>
+                <div class="chip" onclick="toggleChip(this)">🎬 Cine</div>
+                <div class="chip" onclick="toggleChip(this)">✈️ Viajar</div>
+                <div class="chip" onclick="toggleChip(this)">🎮 Juegos</div>
+                <div class="chip" onclick="toggleChip(this)">🍳 Cocinar</div>
+                <div class="chip" onclick="toggleChip(this)">📚 Leer</div>
+                <div class="chip" onclick="toggleChip(this)">🚗 Autos</div>
+                <div class="chip" onclick="toggleChip(this)">🐾 Mascotas</div>
+                <div class="chip" onclick="toggleChip(this)">💃 Bailar</div>
+                <div class="chip" onclick="toggleChip(this)">📸 Fotografía</div>
+                <div class="chip" onclick="toggleChip(this)">🏋️ Fitness</div>
             </div>
         </div>
 
         <button class="btn-main" onclick="processRegistration()">Registrar Perfil Completo</button>
     </div>
 
-    <!-- PANTALLA PRINCIPAL DE INTERACCIÓN -->
     <div class="app-container" id="app-screen">
         <div class="group-tabs">
             <div class="tab active" onclick="changeGroup(this, 'todos')">🌐 Todos</div>
@@ -165,7 +125,7 @@
             <div class="info-panel">
                 <div>
                     <span style="font-size:24px; font-weight:bold;" id="view-name"></span>
-                    <span class="verified-badge">✓ Perfil Verificado</span>
+                    <span class="verified-badge">✓ Verificado</span>
                     <p style="margin:3px 0; color:#555; font-size:14px;" id="view-geo"></p>
                     <p style="margin:3px 0; font-size:12px; font-weight:bold; color:#ff5864;" id="view-meta"></p>
                 </div>
@@ -174,3 +134,15 @@
         </div>
 
         <div class="actions">
+            <button class="btn-action" style="color: #e74c3c;" onclick="getProfiles()">❌</button>
+            <button class="btn-action" style="color: #2ecc71;" onclick="sendLike()">💚</button>
+        </div>
+    </div>
+
+    <script>
+        let myId = null; let profileList = []; let currentIndex = 0; let currentPhotoIndex = 0; let selectedInterests = []; let currentGroup = 'todos';
+
+        function toggleChip(element) {
+            element.classList.toggle('selected');
+            const interest = element.innerText;
+            if (selectedInterests.includes(interest)) {
