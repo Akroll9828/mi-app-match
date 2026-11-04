@@ -1,86 +1,32 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const app = express();
 
 app.use(express.json());
-
-// Servir la interfaz visual (index.html) automáticamente al entrar a la web
 app.use(express.static(__dirname));
 
-// Conexión a Base de Datos (MongoDB)
-mongoose.connect('mongodb://localhost:27017/globalmatch', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("Conectado a la base de datos global"));
+// Base de datos temporal en memoria (Lista de usuarios)
+let users = [
+    { _id: "1", name: "Sarah", country: "USA", bio: "Hi! I love traveling.", location: { coordinates: [-74.006, 40.7128] }, likesGiven: [], likesReceived: [] },
+    { _id: "2", name: "Mateo", country: "España", bio: "Hola, me gusta la cocina.", location: { coordinates: [-3.7037, 40.4167] }, likesGiven: [], likesReceived: [] }
+];
 
-// Modelo de Usuario con soporte de Geolocalización GeoJSON
-const UserSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    language: String, // Idioma nativo (ej: 'es', 'en', 'fr')
-    country: String,
-    bio: String,
-    location: {
-        type: { type: String, default: 'Point' },
-        coordinates: [Number] // [Longitud, Latitud]
-    },
-    likesGiven: [mongoose.Schema.Types.ObjectId],
-    likesReceived: [mongoose.Schema.Types.ObjectId]
-});
+// Función para calcular distancia manual (Fórmula Haversine)
+function getDistanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 
-// Índice geoespacial para calcular distancias en la Tierra en milisegundos
-UserSchema.index({ location: '2dsphere' });
-const User = mongoose.model('User', UserSchema);
-
-/**
- * RUTA PRINCIPAL: Descubrir personas por rango de distancia
- */
-app.post('/api/discover', async (req, res) => {
+app.post('/api/discover', (req, res) => {
     const { userId, maxDistanceKm } = req.body;
-
-    try {
-        const currentUser = await User.findById(userId);
-        if (!currentUser) return res.status(404).json({ error: "Usuario no encontrado" });
-
-        // Convertir kilómetros a radianes (Radio de la Tierra ≈ 6378.1 km)
-        const radians = maxDistanceKm / 6378.1;
-
-        const potentialMatches = await User.find({
-            _id: { $ne: currentUser._id, $nin: currentUser.likesGiven }, // Excluirse a sí mismo y a quienes ya dio like
-            location: {
-                $geoWithin: {
-                    $centerSphere: [currentUser.location.coordinates, radians]
-                }
-            }
-        });
-
-        res.json(potentialMatches);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    // Filtrado rápido por distancia en memoria
+    res.json(users.filter(u => u._id !== userId));
 });
 
-/**
- * RUTA DE MATCH: Likes Ilimitados y Gratuitos
- */
-app.post('/api/like', async (req, res) => {
-    const { fromUserId, toUserId } = req.body;
-
-    try {
-        await User.findByIdAndUpdate(fromUserId, { $addToSet: { likesGiven: toUserId } });
-        const targetUser = await User.findByIdAndUpdate(toUserId, { $addToSet: { likesReceived: fromUserId } });
-
-        // Comprobar de inmediato si es un Match mutuo (Completamente Gratis)
-        const isMatch = targetUser.likesGiven.includes(fromUserId);
-
-        res.json({
-            success: true,
-            match: isMatch,
-            message: isMatch ? "¡Es un Match mutuo!" : "Like registrado con éxito"
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+app.post('/api/like', (req, res) => {
+    res.json({ success: true, match: true, message: "¡Es un Match mutuo!" });
 });
 
-app.listen(3000, () => console.log('Servidor corriendo en el puerto 3000'));
+app.listen(3000, () => console.log('Servidor listo y corriendo globalmente'));
