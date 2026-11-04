@@ -3,53 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Match Real</title>
+    <title>Global Match Inclusivo</title>
     <style>
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: linear-gradient(135deg, #fd297b, #ff5864, #ff655b); margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; color: #fff; }
-        .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); color: #333; width: 320px; text-align: center; }
-        .box input, .box textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); color: #333; width: 340px; text-align: center; max-height: 90vh; overflow-y: auto; }
+        .box input, .box textarea, .box select { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .interest-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
+        .chip { padding: 6px 12px; background: #f1f2f6; border-radius: 15px; font-size: 13px; cursor: pointer; color: #555; }
+        .chip.selected { background: #ff5864; color: white; }
         .btn-main { background: #ff5864; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .card-container { display: none; position: relative; width: 340px; height: 480px; background: white; border-radius: 20px; overflow: hidden; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .profile-img { width: 100%; height: 70%; object-fit: cover; }
-        .profile-info { padding: 15px; height: 30%; background: white; box-sizing: border-box; }
+        .card-container { display: none; position: relative; width: 340px; height: 500px; background: white; border-radius: 20px; overflow: hidden; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .profile-img { width: 100%; height: 65%; object-fit: cover; }
+        .profile-info { padding: 15px; height: 35%; background: white; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; }
         .profile-name { font-size: 22px; font-weight: bold; margin: 0; }
-        .profile-geo { color: #777; font-size: 14px; margin: 4px 0; }
+        .profile-geo { color: #777; font-size: 13px; margin: 2px 0; }
         .profile-bio { font-size: 14px; color: #444; margin: 0; }
-        .actions { display: none; gap: 20px; margin-top: 25px; }
+        .tag-match { font-size: 11px; background: #e8f8f5; color: #2ecc71; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; font-weight: bold; }
+        .actions { display: none; gap: 20px; margin-top: 20px; }
         .btn-action { width: 55px; height: 55px; border-radius: 50%; border: 2px solid #f1f2f6; background: white; cursor: pointer; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .match-screen { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); color:white; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE REGISTRO PARA PERSONAS REALES -->
+    <!-- PANTALLA DE REGISTRO MEJORADA -->
     <div class="box" id="reg-screen">
-        <h2>Crea tu Perfil Real</h2>
-        <p style="font-size: 13px; color: #666;">Ingresa tus datos reales para que personas de todo el mundo te conozcan gratis.</p>
-        <input type="text" id="reg-name" placeholder="Tu Nombre y Edad (ej: Juan, 25)">
+        <h2>Crea tu Perfil</h2>
+        <input type="text" id="reg-name" placeholder="Nombre y Edad (ej: Carlos, 23)">
+        
+        <select id="reg-gender">
+            <option value="">Mi género...</option>
+            <option value="hombre">Soy Hombre</option>
+            <option value="mujer">Soy Mujer</option>
+            <option value="no_binario">Soy No Binario / Otro</option>
+        </select>
+
+        <select id="reg-interest">
+            <option value="">Quiero conocer...</option>
+            <option value="chicas">Chicas</option>
+            <option value="chicos">Chicos</option>
+            <option value="todos">A Todo el Mundo (Sin discriminación)</option>
+        </select>
+
         <input type="text" id="reg-country" placeholder="Tu País (ej: Perú)">
         <input type="text" id="reg-photo" placeholder="Link de tu Foto (URL)">
-        <textarea id="reg-bio" placeholder="Cuéntale al mundo sobre ti..."></textarea>
-        <p style="font-size: 11px; color: #888; margin: 5px 0;">Simulación GPS automática para rango de distancia</p>
-        <button class="btn-main" onclick="registerUser()">Ingresar a la App</button>
+        <textarea id="reg-bio" placeholder="Cuéntale tus gustos al mundo..."></textarea>
+        
+        <p style="font-size: 13px; font-weight: bold; margin: 5px 0 0 0;">Elige tus Gustos/Intereses:</p>
+        <div class="interest-chips">
+            <div class="chip" onclick="toggleChip(this, '🎵 Música')">🎵 Música</div>
+            <div class="chip" onclick="toggleChip(this, '⚽ Deportes')">⚽ Deportes</div>
+            <div class="chip" onclick="toggleChip(this, '🎬 Cine/Series')">🎬 Cine/Series</div>
+            <div class="chip" onclick="toggleChip(this, '✈️ Viajar')">✈️ Viajar</div>
+            <div class="chip" onclick="toggleChip(this, '🎮 Videojuegos')">🎮 Videojuegos</div>
+            <div class="chip" onclick="toggleChip(this, '🍳 Cocinar')">🍳 Cocinar</div>
+        </div>
+
+        <button class="btn-main" onclick="registerUser()">Ingresar Gratis</button>
     </div>
 
-    <!-- CONTENEDOR TIPO TINDER -->
+    <!-- CONTENEDOR PRINCIPAL TINDER -->
     <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
         <div id="filter-area" style="display:none; margin-bottom: 15px; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size:14px;">
-            Distancia máxima: <input type="number" id="max-idx" value="500" style="width:60px; border:none; text-align:center; font-weight:bold; border-radius:5px;" onchange="getMatches()"> km
+            Distancia máxima: <input type="number" id="max-idx" value="1000" style="width:60px; border:none; text-align:center; font-weight:bold; border-radius:5px;" onchange="getMatches()"> km
         </div>
 
         <div class="card-container" id="main-card">
             <div class="match-screen" id="match-pop">
                 <h1 style="color:#2ecc71; font-size: 30px;">¡ES UN MATCH! 😍</h1>
-                <p>¡Se gustaron mutuamente!</p>
+                <p>¡Se gustaron mutuamente con datos reales!</p>
                 <button onclick="closeMatch()" style="padding: 8px 15px; border-radius: 20px; border:none; background:#ff5864; color:white; cursor:pointer; font-weight:bold;">Continuar</button>
             </div>
             <img src="" id="view-img" class="profile-img">
             <div class="profile-info">
-                <p class="profile-name" id="view-name"></p>
-                <p class="profile-geo" id="view-geo"></p>
+                <div>
+                    <p class="profile-name" id="view-name"></p>
+                    <p class="profile-geo" id="view-geo"></p>
+                    <div id="view-comunes"></div>
+                </div>
                 <p class="profile-bio" id="view-bio"></p>
             </div>
         </div>
@@ -63,22 +94,38 @@
     <script>
         let myId = null;
         let activeProfile = null;
-        // Coordenadas simuladas para el registro inicial
+        let selectedInterests = [];
         let myLat = -12.0266; 
         let myLon = -77.0011;
 
+        function toggleChip(element, interest) {
+            element.classList.toggle('selected');
+            if(selectedInterests.includes(interest)) {
+                selectedInterests = selectedInterests.filter(i => i !== interest);
+            } else {
+                selectedInterests.push(interest);
+            }
+        }
+
         async function registerUser() {
             const name = document.getElementById('reg-name').value;
+            const gender = document.getElementById('reg-gender').value;
+            const interestInput = document.getElementById('reg-interest').value;
             const country = document.getElementById('reg-country').value;
             const photoUrl = document.getElementById('reg-photo').value;
             const bio = document.getElementById('reg-bio').value;
 
-            if(!name || !country || !bio) return alert("Por favor llena tus datos reales.");
+            if(!name || !gender || !interestInput || !country || !bio) return alert("Por favor completa tu perfil inclusivo.");
+
+            // Convertir término de búsqueda al formato del servidor
+            let interestedIn = 'todos';
+            if(interestInput === 'chicas') interestedIn = 'mujeres';
+            if(interestInput === 'chicos') interestedIn = 'hombres';
 
             const res = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, country, bio, photoUrl, lat: myLat, lon: myLon })
+                body: JSON.stringify({ name, country, bio, photoUrl, lat: myLat, lon: myLon, gender, interestedIn, interests: selectedInterests })
             });
             const data = await res.json();
             if(data.success) {
@@ -100,39 +147,20 @@
             });
             const profiles = await res.json();
             if(profiles.length > 0) {
-                activeProfile = profiles[0]; // Mostrar el primer usuario real disponible
+                activeProfile = profiles[0]; 
                 document.getElementById('view-name').innerText = activeProfile.name;
-                document.getElementById('view-geo').innerText = `${activeProfile.country} • A ${activeProfile.distance} km de ti`;
+                document.getElementById('view-geo').innerText = `${activeProfile.country} • A ${activeProfile.distance} km`;
                 document.getElementById('view-bio').innerText = activeProfile.bio;
                 document.getElementById('view-img').src = activeProfile.photoUrl;
+
+                // Mostrar gustos en común
+                const comunesDiv = document.getElementById('view-comunes');
+                comunesDiv.innerHTML = '';
+                if(activeProfile.comunes && activeProfile.comunes.length > 0) {
+                    comunesDiv.innerHTML = `<span class="tag-match">Gustos en común: ${activeProfile.comunes.join(', ')}</span>`;
+                }
             } else {
                 activeProfile = null;
-                document.getElementById('view-name').innerText = "No hay usuarios reales registrados";
-                document.getElementById('view-geo').innerText = "Comparte tu enlace";
-                document.getElementById('view-bio').innerText = "Cuando otra persona real entre desde tu link y ponga sus datos, aparecerá aquí al instante.";
-                document.getElementById('view-img').src = "https://unsplash.com";
-            }
-        }
-
-        async function sendLike() {
-            if(!activeProfile) return;
-            const res = await fetch('/api/like', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fromUserId: myId, toUserId: activeProfile._id })
-            });
-            const data = await res.json();
-            if(data.match) {
-                document.getElementById('match-pop').style.display = 'flex';
-            } else {
-                getMatches();
-            }
-        }
-
-        function closeMatch() {
-            document.getElementById('match-pop').style.display = 'none';
-            getMatches();
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('view-name').innerText = "No hay perfiles compatibles cerca";
+                document.getElementById('view-geo').innerText = "¡Invita a tus amigos reales!";
+                document.getElementById('view-bio').innerText = "Cuando se registren usuarios reales que coincidan con tu búsqueda, se listarán inmediatamente.";
