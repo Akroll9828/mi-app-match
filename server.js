@@ -1,15 +1,13 @@
 const express = require('express');
 const app = express();
 
-// Soporte completo para recibir fotos reales en alta definición desde la galería
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(express.static(__dirname));
 
 let usuariosRegistrados = [];
 let registroLikes = {};
 
-// REGISTRO DE USUARIOS REALES
 app.post('/api/register', (req, res) => {
     const { 
         name, age, minAgeSearch, maxAgeSearch, maxDistSearch,
@@ -17,9 +15,8 @@ app.post('/api/register', (req, res) => {
         relationshipGoal, familyPlans, verificationSelfie, lat, lon 
     } = req.body;
     
-    // Validación de seguridad obligatoria
     if (!photos || photos.length < 3) {
-        return res.status(400).json({ success: false, message: "Debes subir al menos 3 fotos obligatorias de tu galería." });
+        return res.status(400).json({ success: false, message: "Debes subir al menos 3 fotos de tu galería." });
     }
     if (!verificationSelfie) {
         return res.status(400).json({ success: false, message: "Falta la selfie de verificación facial." });
@@ -27,30 +24,19 @@ app.post('/api/register', (req, res) => {
 
     const newId = "user_" + Date.now();
     const newUser = {
-        _id: newId,
-        name,
-        age: parseInt(age),
+        _id: newId, name, age: parseInt(age),
         minAgeSearch: parseInt(minAgeSearch) || 18,
         maxAgeSearch: parseInt(maxAgeSearch) || 99,
         maxDistSearch: parseInt(maxDistSearch) || 500,
-        country,
-        bio,
-        photos, // Lista de imágenes reales convertidas
-        gender,
-        interestedIn,
-        interests: interests || [],
-        relationshipGoal, // Grupo asignado
-        familyPlans,      
-        isVerified: true, // Verificación de rostro gratuita e instantánea
-        lat: parseFloat(lat) || -12.0464,
-        lon: parseFloat(lon) || -77.0428
+        country, bio, photos, gender, interestedIn,
+        interests: interests || [], relationshipGoal, familyPlans,
+        isVerified: true, lat: parseFloat(lat) || -12.0464, lon: parseFloat(lon) || -77.0428
     };
 
     usuariosRegistrados.push(newUser);
-    res.json({ success: true, userId: newId, message: "¡Perfil creado con éxito!" });
+    res.json({ success: true, userId: newId });
 });
 
-// Fórmula matemática para medir distancias kilométricas en la Tierra
 function getDistanceKm(lat1, lon1, lat2, lon2) {
     const R = 6371; 
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -59,31 +45,25 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// ALGORITMO DE DESCUBRIMIENTO MUTUO E INCLUSIVO
 app.post('/api/discover', (req, res) => {
     const { userId, groupFilter } = req.body;
-    
     const currentUser = usuariosRegistrados.find(u => u._id === userId);
     if (!currentUser) return res.json([]);
 
     let result = usuariosRegistrados.filter(user => {
         if (user._id === userId) return false;
 
-        // 1. FILTRADO POR INTERÉS DE GÉNERO MUTUO
         const meInteresa = currentUser.interestedIn === 'todos' || currentUser.interestedIn === user.gender;
         const leIntereso = user.interestedIn === 'todos' || user.interestedIn === currentUser.gender;
         if (!meInteresa || !leIntereso) return false;
 
-        // 2. FILTRADO DE EDAD CRUZADO (Cumplir los requisitos de ambos)
         const edadMíaEncaja = currentUser.age >= user.minAgeSearch && currentUser.age <= user.maxAgeSearch;
         const edadSuyaEncaja = user.age >= currentUser.minAgeSearch && user.age <= currentUser.maxAgeSearch;
         if (!edadMíaEncaja || !edadSuyaEncaja) return false;
 
-        // 3. FILTRADO DE DISTANCIA A TU ANTOJO
         const distance = getDistanceKm(currentUser.lat, currentUser.lon, user.lat, user.lon);
         if (distance > currentUser.maxDistSearch) return false;
 
-        // 4. SEPARACIÓN EN GRUPOS POR INTENCIONES REALES
         if (groupFilter && groupFilter !== 'todos' && user.relationshipGoal !== groupFilter) return false;
 
         return true;
@@ -93,12 +73,11 @@ app.post('/api/discover', (req, res) => {
         const comunes = user.interests.filter(i => currentUser.interests.includes(i));
         return { ...user, distance, comunes };
     })
-    .sort((a, b) => b.comunes.length - a.comunes.length); // Ordenar por gustos compartidos
+    .sort((a, b) => b.comunes.length - a.comunes.length);
 
     res.json(result);
 });
 
-// REGISTRO DE ME GUSTAS SIN LÍMITES Y GRATIS
 app.post('/api/like', (req, res) => {
     const { fromUserId, toUserId } = req.body;
     if (!registroLikes[fromUserId]) registroLikes[fromUserId] = [];
@@ -107,4 +86,4 @@ app.post('/api/like', (req, res) => {
     res.json({ success: true, match: isMatch });
 });
 
-app.listen(3000, () => console.log('Servidor en funcionamiento perfecto'));
+app.listen(3000, () => console.log('Servidor corriendo perfecto'));
